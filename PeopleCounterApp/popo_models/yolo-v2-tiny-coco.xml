@@ -12,7 +12,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="1" name="truediv/mul_/Fused_Mul_19791981_const" type="Const" version="opset1">
+		<layer id="1" name="input/reverse_input_channels/Concat2786_const" type="Const" version="opset1">
 			<data element_type="f32" offset="0" shape="16,3,3,3" size="1728"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -48,7 +48,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="3" name="data_add_1827/copy_const" type="Const" version="opset1">
+		<layer id="3" name="data_add_1853/copy_const" type="Const" version="opset1">
 			<data element_type="f32" offset="1728" shape="1,16,1,1" size="64"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -83,7 +83,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="5" name="LeakyReLU_22222502/Cast_12879_const" type="Const" version="opset1">
+		<layer id="5" name="LeakyReLU_22532539/Cast_12932_const" type="Const" version="opset1">
 			<data element_type="f32" offset="1792" shape="1" size="4"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -91,7 +91,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="6" name="LeakyReLU_22222502" type="PReLU" version="opset1">
+		<layer id="6" name="LeakyReLU_22532539" type="PReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -131,7 +131,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="8" name="truediv_1/mul_/Fused_Mul_19831985_const" type="Const" version="opset1">
+		<layer id="8" name="truediv_1/mul_/Fused_Mul_20122014_const" type="Const" version="opset1">
 			<data element_type="f32" offset="1796" shape="32,16,3,3" size="18432"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -167,7 +167,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="10" name="data_add_18301835/copy_const" type="Const" version="opset1">
+		<layer id="10" name="data_add_18561861/copy_const" type="Const" version="opset1">
 			<data element_type="f32" offset="20228" shape="1,32,1,1" size="128"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -202,7 +202,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="12" name="LeakyReLU_22192478/Cast_12883_const" type="Const" version="opset1">
+		<layer id="12" name="LeakyReLU_22522523/Cast_12920_const" type="Const" version="opset1">
 			<data element_type="f32" offset="1792" shape="1" size="4"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -210,7 +210,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="13" name="LeakyReLU_22192478" type="PReLU" version="opset1">
+		<layer id="13" name="LeakyReLU_22522523" type="PReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -250,7 +250,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="15" name="truediv_2/mul_/Fused_Mul_19871989_const" type="Const" version="opset1">
+		<layer id="15" name="truediv_2/mul_/Fused_Mul_20162018_const" type="Const" version="opset1">
 			<data element_type="f32" offset="20356" shape="64,32,3,3" size="73728"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -286,7 +286,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="17" name="data_add_18381843/copy_const" type="Const" version="opset1">
+		<layer id="17" name="data_add_18641869/copy_const" type="Const" version="opset1">
 			<data element_type="f32" offset="94084" shape="1,64,1,1" size="256"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -321,7 +321,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="19" name="LeakyReLU_22212494/Cast_12887_const" type="Const" version="opset1">
+		<layer id="19" name="LeakyReLU_22542515/Cast_12926_const" type="Const" version="opset1">
 			<data element_type="f32" offset="1792" shape="1" size="4"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -329,7 +329,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="20" name="LeakyReLU_22212494" type="PReLU" version="opset1">
+		<layer id="20" name="LeakyReLU_22542515" type="PReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -369,7 +369,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="22" name="truediv_3/mul_/Fused_Mul_19911993_const" type="Const" version="opset1">
+		<layer id="22" name="truediv_3/mul_/Fused_Mul_20202022_const" type="Const" version="opset1">
 			<data element_type="f32" offset="94340" shape="128,64,3,3" size="294912"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -405,7 +405,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="24" name="data_add_18461851/copy_const" type="Const" version="opset1">
+		<layer id="24" name="data_add_18721877/copy_const" type="Const" version="opset1">
 			<data element_type="f32" offset="389252" shape="1,128,1,1" size="512"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -440,7 +440,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="26" name="LeakyReLU_22202486/Cast_12875_const" type="Const" version="opset1">
+		<layer id="26" name="LeakyReLU_22562527/Cast_12928_const" type="Const" version="opset1">
 			<data element_type="f32" offset="1792" shape="1" size="4"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -448,7 +448,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="27" name="LeakyReLU_22202486" type="PReLU" version="opset1">
+		<layer id="27" name="LeakyReLU_22562527" type="PReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -488,7 +488,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="29" name="truediv_4/mul_/Fused_Mul_19951997_const" type="Const" version="opset1">
+		<layer id="29" name="truediv_4/mul_/Fused_Mul_20242026_const" type="Const" version="opset1">
 			<data element_type="f32" offset="389764" shape="256,128,3,3" size="1179648"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -524,7 +524,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="31" name="data_add_18541859/copy_const" type="Const" version="opset1">
+		<layer id="31" name="data_add_18801885/copy_const" type="Const" version="opset1">
 			<data element_type="f32" offset="1569412" shape="1,256,1,1" size="1024"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -559,7 +559,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="33" name="LeakyReLU_22232498/Cast_12877_const" type="Const" version="opset1">
+		<layer id="33" name="LeakyReLU_22552535/Cast_12918_const" type="Const" version="opset1">
 			<data element_type="f32" offset="1792" shape="1" size="4"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -567,7 +567,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="34" name="LeakyReLU_22232498" type="PReLU" version="opset1">
+		<layer id="34" name="LeakyReLU_22552535" type="PReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -607,7 +607,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="36" name="truediv_5/mul_/Fused_Mul_19992001_const" type="Const" version="opset1">
+		<layer id="36" name="truediv_5/mul_/Fused_Mul_20282030_const" type="Const" version="opset1">
 			<data element_type="f32" offset="1570436" shape="512,256,3,3" size="4718592"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -643,7 +643,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="38" name="data_add_18621867/copy_const" type="Const" version="opset1">
+		<layer id="38" name="data_add_18881893/copy_const" type="Const" version="opset1">
 			<data element_type="f32" offset="6289028" shape="1,512,1,1" size="2048"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -678,7 +678,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="40" name="LeakyReLU_22252482/Cast_12881_const" type="Const" version="opset1">
+		<layer id="40" name="LeakyReLU_22582511/Cast_12922_const" type="Const" version="opset1">
 			<data element_type="f32" offset="1792" shape="1" size="4"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -686,7 +686,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="41" name="LeakyReLU_22252482" type="PReLU" version="opset1">
+		<layer id="41" name="LeakyReLU_22582511" type="PReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -726,7 +726,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="43" name="truediv_6/mul_/Fused_Mul_20032005_const" type="Const" version="opset1">
+		<layer id="43" name="truediv_6/mul_/Fused_Mul_20322034_const" type="Const" version="opset1">
 			<data element_type="f32" offset="6291076" shape="1024,512,3,3" size="18874368"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -762,7 +762,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="45" name="data_add_18701875/copy_const" type="Const" version="opset1">
+		<layer id="45" name="data_add_18961901/copy_const" type="Const" version="opset1">
 			<data element_type="f32" offset="25165444" shape="1,1024,1,1" size="4096"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -797,7 +797,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="47" name="LeakyReLU_2490/Cast_12889_const" type="Const" version="opset1">
+		<layer id="47" name="LeakyReLU_22572531/Cast_12924_const" type="Const" version="opset1">
 			<data element_type="f32" offset="1792" shape="1" size="4"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -805,7 +805,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="48" name="LeakyReLU_2490" type="PReLU" version="opset1">
+		<layer id="48" name="LeakyReLU_22572531" type="PReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -826,7 +826,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="49" name="truediv_7/mul_/Fused_Mul_20072009_const" type="Const" version="opset1">
+		<layer id="49" name="truediv_7/mul_/Fused_Mul_20362038_const" type="Const" version="opset1">
 			<data element_type="f32" offset="25169540" shape="512,1024,3,3" size="18874368"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -862,7 +862,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="51" name="data_add_18781883/copy_const" type="Const" version="opset1">
+		<layer id="51" name="data_add_19041909/copy_const" type="Const" version="opset1">
 			<data element_type="f32" offset="44043908" shape="1,512,1,1" size="2048"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -897,7 +897,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="53" name="LeakyReLU_22242506/Cast_12885_const" type="Const" version="opset1">
+		<layer id="53" name="LeakyReLU_2519/Cast_12930_const" type="Const" version="opset1">
 			<data element_type="f32" offset="1792" shape="1" size="4"/>
 			<output>
 				<port id="1" precision="FP32">
@@ -905,7 +905,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="54" name="LeakyReLU_22242506" type="PReLU" version="opset1">
+		<layer id="54" name="LeakyReLU_2519" type="PReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -1090,10 +1090,14 @@
 		<cli_parameters>
 			<batch value="1"/>
 			<blobs_as_inputs value="True"/>
+			<caffe_parser_path value="DIR"/>
 			<data_type value="float"/>
 			<disable_nhwc_to_nchw value="False"/>
+			<disable_omitting_optional value="False"/>
 			<disable_resnet_optimization value="False"/>
 			<enable_concat_optimization value="False"/>
+			<enable_flattening_nested_params value="False"/>
+			<enable_ssd_gluoncv value="False"/>
 			<extensions value="DIR"/>
 			<framework value="tf"/>
 			<freeze_placeholder_with_value value="{}"/>
@@ -1102,8 +1106,10 @@
 			<generate_experimental_IR_V10 value="True"/>
 			<input_model value="DIR/yolo-v2-tiny-coco.pb"/>
 			<input_model_is_text value="False"/>
+			<k value="DIR/CustomLayersMapping.xml"/>
 			<keep_quantize_ops_in_IR value="True"/>
 			<keep_shape_ops value="False"/>
+			<legacy_mxnet_model value="False"/>
 			<log_level value="ERROR"/>
 			<mean_scale_values value="{}"/>
 			<mean_values value="()"/>
@@ -1112,13 +1118,17 @@
 			<output_dir value="DIR"/>
 			<placeholder_data_types value="{}"/>
 			<progress value="False"/>
-			<reverse_input_channels value="False"/>
+			<remove_memory value="False"/>
+			<remove_output_softmax value="False"/>
+			<reverse_input_channels value="True"/>
+			<save_params_from_nd value="False"/>
+			<scale value="255.0"/>
 			<scale_values value="()"/>
 			<silent value="False"/>
 			<stream_output value="False"/>
 			<tensorflow_use_custom_operations_config value="DIR/yolo_v2_tiny.json"/>
 			<transformations_config value="DIR/yolo_v2_tiny.json"/>
-			<unset unset_cli_parameters="disable_fusing, disable_gfusing, finegrain_fusing, input, input_checkpoint, input_meta_graph, input_shape, output, placeholder_shapes, saved_model_dir, saved_model_tags, scale, tensorboard_logdir, tensorflow_custom_layer_libraries, tensorflow_custom_operations_config_update, tensorflow_object_detection_api_pipeline_config, tensorflow_operation_patterns, tensorflow_subgraph_patterns"/>
+			<unset unset_cli_parameters="counts, disable_fusing, disable_gfusing, finegrain_fusing, input, input_checkpoint, input_meta_graph, input_proto, input_shape, input_symbol, mean_file, mean_file_offsets, nd_prefix_name, output, placeholder_shapes, pretrained_model_name, saved_model_dir, saved_model_tags, tensorboard_logdir, tensorflow_custom_layer_libraries, tensorflow_custom_operations_config_update, tensorflow_object_detection_api_pipeline_config, tensorflow_operation_patterns, tensorflow_subgraph_patterns"/>
 		</cli_parameters>
 	</meta_data>
 </net>

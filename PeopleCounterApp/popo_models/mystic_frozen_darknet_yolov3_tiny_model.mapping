@@ -1,0 +1,239 @@
+<?xml version="1.0" ?>
+<mapping>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_3/Conv2D" out_port_id="0"/>
+		<IR id="23" name="detector/yolo-v3-tiny/Conv_3/Conv2D" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_4/weights/read" out_port_id="0"/>
+		<IR id="29" name="Mul1_2377/Fused_Mul_28462848_const" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_11/Conv2D" out_port_id="0"/>
+		<IR id="65" name="detector/yolo-v3-tiny/Conv_11/Conv2D" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/truediv" out_port_id="0"/>
+		<IR id="0" name="inputs" out_port_id="0"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_11/weights/read" out_port_id="0"/>
+		<IR id="64" name="Mul1_2449/Fused_Mul_28662868_const" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_12/Conv2D" out_port_id="0"/>
+		<IR id="71" name="detector/yolo-v3-tiny/Conv_12/Conv2D" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_10/weights/read" out_port_id="0"/>
+		<IR id="55" name="Mul1_2437/Fused_Mul_28622864_const" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv/LeakyRelu" out_port_id="0"/>
+		<IR id="6" name="LeakyReLU_31873570" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_2/BatchNorm/FusedBatchNorm" out_port_id="0"/>
+		<IR id="18" name="Add1_2354/Fused_Add_" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_8/weights/read" out_port_id="0"/>
+		<IR id="76" name="Mul1_2425/Fused_Mul_28702872_const" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_4/LeakyRelu" out_port_id="0"/>
+		<IR id="34" name="LeakyReLU_31883574" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_11/LeakyRelu" out_port_id="0"/>
+		<IR id="69" name="LeakyReLU_31863594" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv/weights/read" out_port_id="0"/>
+		<IR id="1" name="detector/truediv/mul_28742876_const" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_1/Conv2D" out_port_id="0"/>
+		<IR id="9" name="detector/yolo-v3-tiny/Conv_1/Conv2D" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/ResizeNearestNeighbor/size" out_port_id="0"/>
+		<IR id="61" name="detector/yolo-v3-tiny/ResizeNearestNeighbor/Cast_14163_const" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_3/weights/read" out_port_id="0"/>
+		<IR id="22" name="Mul1_2365/Fused_Mul_28422844_const" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_2/LeakyRelu" out_port_id="0"/>
+		<IR id="20" name="LeakyReLU_31853606" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_8/Conv2D" out_port_id="0"/>
+		<IR id="77" name="detector/yolo-v3-tiny/Conv_8/Conv2D" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_10/Conv2D" out_port_id="0"/>
+		<IR id="56" name="detector/yolo-v3-tiny/Conv_10/Conv2D" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_6/LeakyRelu" out_port_id="0"/>
+		<IR id="48" name="LeakyReLU_31833598" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_7/BatchNorm/FusedBatchNorm" out_port_id="0"/>
+		<IR id="52" name="Add1_2414/Fused_Add_" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/concat_3" out_port_id="0"/>
+		<IR id="63" name="detector/yolo-v3-tiny/concat_3" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv/BatchNorm/FusedBatchNorm" out_port_id="0"/>
+		<IR id="4" name="Add1_/Fused_Add_" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_6/Conv2D" out_port_id="0"/>
+		<IR id="44" name="detector/yolo-v3-tiny/Conv_6/Conv2D" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_6/BatchNorm/FusedBatchNorm" out_port_id="0"/>
+		<IR id="46" name="Add1_2402/Fused_Add_" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_4/BatchNorm/FusedBatchNorm" out_port_id="0"/>
+		<IR id="32" name="Add1_2378/Fused_Add_" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_5/LeakyRelu" out_port_id="0"/>
+		<IR id="41" name="LeakyReLU_31903590" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_1/BatchNorm/FusedBatchNorm" out_port_id="0"/>
+		<IR id="11" name="Add1_2342/Fused_Add_" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_1/weights/read" out_port_id="0"/>
+		<IR id="8" name="Mul1_2341/Fused_Mul_28342836_const" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/upsampled" out_port_id="0"/>
+		<IR id="62" name="detector/yolo-v3-tiny/ResizeNearestNeighbor" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/ResizeNearestNeighbor" out_port_id="0"/>
+		<IR id="62" name="detector/yolo-v3-tiny/ResizeNearestNeighbor" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_7/weights/read" out_port_id="0"/>
+		<IR id="49" name="Mul1_2413/Fused_Mul_28582860_const" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_10/BatchNorm/FusedBatchNorm" out_port_id="0"/>
+		<IR id="58" name="Add1_2438/Fused_Add_" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_5/weights/read" out_port_id="0"/>
+		<IR id="36" name="Mul1_2389/Fused_Mul_28502852_const" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/pool2/MaxPool" out_port_id="0"/>
+		<IR id="7" name="detector/yolo-v3-tiny/pool2/MaxPool" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_7/LeakyRelu" out_port_id="0"/>
+		<IR id="54" name="LeakyReLU_3582" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv/Conv2D" out_port_id="0"/>
+		<IR id="2" name="detector/yolo-v3-tiny/Conv/Conv2D" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_7/Conv2D" out_port_id="0"/>
+		<IR id="50" name="detector/yolo-v3-tiny/Conv_7/Conv2D" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_4/Conv2D" out_port_id="0"/>
+		<IR id="30" name="detector/yolo-v3-tiny/Conv_4/Conv2D" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_9/Conv2D" out_port_id="0"/>
+		<IR id="83" name="detector/yolo-v3-tiny/Conv_9/Conv2D" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_11/BatchNorm/FusedBatchNorm" out_port_id="0"/>
+		<IR id="67" name="Add1_2450/Fused_Add_" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_2/Conv2D" out_port_id="0"/>
+		<IR id="16" name="detector/yolo-v3-tiny/Conv_2/Conv2D" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_3/BatchNorm/FusedBatchNorm" out_port_id="0"/>
+		<IR id="25" name="Add1_2366/Fused_Add_" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_6/weights/read" out_port_id="0"/>
+		<IR id="43" name="Mul1_2401/Fused_Mul_28542856_const" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_5/BatchNorm/FusedBatchNorm" out_port_id="0"/>
+		<IR id="39" name="Add1_2390/Fused_Add_" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_10/LeakyRelu" out_port_id="0"/>
+		<IR id="60" name="LeakyReLU_31843610" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_2/weights/read" out_port_id="0"/>
+		<IR id="15" name="Mul1_2353/Fused_Mul_28382840_const" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_8/LeakyRelu" out_port_id="0"/>
+		<IR id="81" name="LeakyReLU_31913586" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/pool2_1/MaxPool" out_port_id="0"/>
+		<IR id="14" name="detector/yolo-v3-tiny/pool2_1/MaxPool" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/pool2_5/MaxPool" out_port_id="0"/>
+		<IR id="42" name="detector/yolo-v3-tiny/pool2_5/MaxPool" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_8/BatchNorm/FusedBatchNorm" out_port_id="0"/>
+		<IR id="79" name="Add1_2426/Fused_Add_" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/pool2_3/MaxPool" out_port_id="0"/>
+		<IR id="28" name="detector/yolo-v3-tiny/pool2_3/MaxPool" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_9/weights/read" out_port_id="0"/>
+		<IR id="82" name="detector/yolo-v3-tiny/Conv_9/weights/read/Output_0/Data__const" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_12/weights/read" out_port_id="0"/>
+		<IR id="70" name="detector/yolo-v3-tiny/Conv_12/weights/read/Output_0/Data__const" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_1/LeakyRelu" out_port_id="0"/>
+		<IR id="13" name="LeakyReLU_31823578" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_5/Conv2D" out_port_id="0"/>
+		<IR id="37" name="detector/yolo-v3-tiny/Conv_5/Conv2D" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/Conv_3/LeakyRelu" out_port_id="0"/>
+		<IR id="27" name="LeakyReLU_31893602" out_port_id="2"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/pool2_2/MaxPool" out_port_id="0"/>
+		<IR id="21" name="detector/yolo-v3-tiny/pool2_2/MaxPool" out_port_id="1"/>
+	</map>
+	<map>
+		<framework name="detector/yolo-v3-tiny/pool2_4/MaxPool" out_port_id="0"/>
+		<IR id="35" name="detector/yolo-v3-tiny/pool2_4/MaxPool" out_port_id="1"/>
+	</map>
+</mapping>

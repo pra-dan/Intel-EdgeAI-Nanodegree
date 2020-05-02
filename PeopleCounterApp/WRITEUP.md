@@ -1,5 +1,5 @@
 Run using
-python3 main.py -m popo_models/yolo-v2-coco.xml -i images/sample_dog.jpg -d CPU -pt 0.5 
+python3 main.py -m popo_models/yolo-v2-coco.xml -i images/sample_dog.jpg -d CPU -pt 0.5
 
 # Project Write-Up
 
@@ -36,19 +36,49 @@ Lighting, model accuracy, and camera focal length/image size have different effe
 deployed edge model. The potential effects of each of these are as follows...
 
 ## Model Research
+* Converted the Darknet based YOLOv3-tiny model using [Mystic's method](https://github.com/mystic123/tensorflow-yolo-v3.git)
+```
+# Install TensorFlow
+!pip install tensorflow==1.11.0
 
-[This heading is only required if a suitable model was not found after trying out at least three
-different models. However, you may also use this heading to detail how you converted 
-a successful model.]
+# Get repository
+!git clone https://github.com/mystic123/tensorflow-yolo-v3.git
+%cd tensorflow-yolo-v3
+!git checkout ed60b90
 
-In investigating potential people counter models, I tried each of the following three models:
+# Get coco.names
+!wget https://raw.githubusercontent.com/pjreddie/darknet/master/data/coco.names
+
+# Get v3 weights
+!wget "https://pjreddie.com/media/files/yolov3.weights"
+
+# Get v3-tiny weights
+!wget "https://pjreddie.com/media/files/yolov3-tiny.weights"
+
+# Convert v3-tiny
+!python3 convert_weights_pb.py --class_names coco.names --data_format NHWC --weights_file yolov3-tiny.weights --tiny
+```
+* Converting TensorFlow graph file (.pb) to IR information
+```
+pradan@pradan-HP-15-Notebook-PC:/opt/intel/openvino_2020.1.023/deployment_tools/model_optimizer$ python3 mo_tf.py --input_model ~/yolo-models/mystic_frozen_darknet_yolov3_tiny_model.pb --tensorflow_use_custom_operations_config extensions/front/tf/yolo_v3_tiny.json --batch 1 --output_dir ~/Desktop
+
+```
+The conversion was successfully executed, as shown in the log:
+```
+[ SUCCESS ] Generated IR version 10 model.
+[ SUCCESS ] XML file: /home/pradan/Desktop/mystic_frozen_darknet_yolov3_tiny_model.xml
+[ SUCCESS ] BIN file: /home/pradan/Desktop/mystic_frozen_darknet_yolov3_tiny_model.bin
+[ SUCCESS ] Total execution time: 58.47 seconds.
+[ SUCCESS ] Memory consumed: 516 MB.
+
+```
 
 - Model 1: [Name]
   - [Model Source]
   - I converted the model to an Intermediate Representation with the following arguments...
   - The model was insufficient for the app because...
   - I tried to improve the model for the app by...
-  
+
 - Model 2: [Name]
   - [Model Source]
   - I converted the model to an Intermediate Representation with the following arguments...
@@ -60,3 +90,6 @@ In investigating potential people counter models, I tried each of the following 
   - I converted the model to an Intermediate Representation with the following arguments...
   - The model was insufficient for the app because...
   - I tried to improve the model for the app by...
+
+### References
+* [OpenVINO Toolkit API Classes](https://docs.openvinotoolkit.org/2019_R3/ie_python_api.html)
