@@ -15,14 +15,14 @@ Some of the potential reasons for handling custom layers are...
 
 ## Comparing Model Performance
 
-My method(s) to compare models before and after conversion to Intermediate Representations
-were...
-
+I have used the [YOLO v3-tiny model](https://pjreddie.com/media/files/papers/YOLOv3.pdf), based on Darknet. My method(s) to compare models before and after conversion to Intermediate Representations
+were as follows:
+Pre-Conversion|Post-Conversion
+--|--
 The difference between model accuracy pre- and post-conversion was...
 
-The size of the model pre- and post-conversion was...
-
-The inference time of the model pre- and post-conversion was...
+33.79 MB | 35.4 MB
+43.34 s| 0.0038 s
 
 ## Assess Model Use Cases
 
@@ -48,9 +48,6 @@ deployed edge model. The potential effects of each of these are as follows...
 
 # Get coco.names
 !wget https://raw.githubusercontent.com/pjreddie/darknet/master/data/coco.names
-
-# Get v3 weights
-!wget "https://pjreddie.com/media/files/yolov3.weights"
 
 # Get v3-tiny weights
 !wget "https://pjreddie.com/media/files/yolov3-tiny.weights"

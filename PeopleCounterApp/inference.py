@@ -5,12 +5,15 @@ import sys
 import logging as log
 from time import time
 from math import exp
+import logging
+logging.basicConfig(format="[ %(levelname)s ] %(message)s", level=logging.INFO, stream=sys.stdout)
+log = logging.getLogger()
 from openvino.inference_engine import IENetwork, IECore, IEPlugin
 
 
 class YoloParams:
     # ------------------------------------------- Extracting layer parameters ------------------------------------------
-    # Magic numbers are copied from yolo samples
+    # Magic numbers are copied from yolov3-tiny.cfg file (Look in the project folder)
     def __init__(self, param, side):
         self.num = 3 if 'num' not in param else int(param['num'])
         self.coords = 4 if 'coords' not in param else int(param['coords'])
@@ -23,12 +26,13 @@ class YoloParams:
             mask = [int(idx) for idx in param['mask'].split(',')]
             self.num = len(mask)
 
+            # Collect pairs of anchors to mask
             maskedAnchors = []
             for idx in mask:
                 maskedAnchors += [self.anchors[idx * 2], self.anchors[idx * 2 + 1]]
             self.anchors = maskedAnchors
 
-        self.side = side
+        self.side = side    # 26 for first layer and 13 for second
         self.isYoloV3 = 'mask' in param  # Weak way to determine but the only one.
 
 
@@ -54,24 +58,30 @@ def scale_bbox(x, y, h, w, class_id, confidence, h_scale, w_scale):
 
 def parse_yolo_region(blob, resized_image_shape, original_im_shape, params, threshold):
     # ------------------------------------------ Validating output parameters ------------------------------------------
-    _, _, out_blob_h, out_blob_w = blob.shape
+    _, _, out_blob_h, out_blob_w = blob.shape   # [26, 26] and [13, 13]
     assert out_blob_w == out_blob_h, "Invalid size of output blob. It sould be in NCHW layout and height should " \
                                      "be equal to width. Current height = {}, current width = {}" \
                                      "".format(out_blob_h, out_blob_w)
 
     # ------------------------------------------ Extracting layer parameters -------------------------------------------
-    orig_im_h, orig_im_w = original_im_shape
-    resized_image_h, resized_image_w = resized_image_shape
+    orig_im_h, orig_im_w = original_im_shape    # 416
+    resized_image_h, resized_image_w = resized_image_shape  # 416
     objects = list()
-    predictions = blob.flatten()
-    side_square = params.side * params.side
+
+    predictions = blob.flatten()    #(16095 for 13)
+    print(predictions)
+
+    side_square = params.side * params.side     # 26*26 for first layer and 13*13 for second
 
     # ------------------------------------------- Parsing YOLO Region output -------------------------------------------
+    #print("side_square: {}".format(side_square))
     for i in range(side_square):
         row = i // params.side
-        col = i % params.side
+        col = i % params.side   # Just another way of avoiding 2 nested for loopss
+        #print("row: {}\tcol{}".format(row,col))
         for n in range(params.num):
             obj_index = entry_index(params.side, params.coords, params.classes, n * side_square + i, params.coords)
+            #print("obj_index: {}".format(obj_index))
             scale = predictions[obj_index]
             if scale < threshold:
                 continue
@@ -126,14 +136,13 @@ class Network:
         plugin = IEPlugin(device="CPU")
         # Read the IR as a IENetwork
         self.net = IENetwork(model = model_xml, weights = model_bin)
-
         # This network is actually our model and all relevant info of
         # the model can be extracted from it.
 
         ### Check for supported layers ###
-        print("\nThe supported layers in the model are: ")
+        #print("\nThe supported layers in the model are: ")
         supp_layers = plugin.get_supported_layers(self.net)
-        print(str(supp_layers))
+        #print(str(supp_layers))
         unsupp_layers = [u for u in self.net.layers.keys() if u not in supp_layers]
         if len(unsupp_layers) != 0:
             print("\nFound Unsupported layers: {}".format(string(unsupp_layers)))
@@ -150,16 +159,14 @@ class Network:
 
     def get_input_shape(self):
         ### Return the shape of the input layer ###
-        print("\nThe input blob shape was found as: {}".format(str(self.net.inputs[self.input_blob].shape)))
-        print("\nThe output blob shape was found as: {}".format(str(self.net.outputs[self.output_blob].shape))) # (13, 13, 425)
+        print("The input blob shape was found as: {}".format(str(self.net.inputs[self.input_blob].shape)))
+        print("The output blob shape was found as: {}".format(str(self.net.outputs[self.output_blob].shape))) # (13, 13, 425)
         return self.net.inputs[self.input_blob].shape
 
     def async_inference(self, img):
         ### Start an asynchronous request ###
         infer_time_beg = time()
         self.exec_net.start_async(request_id=0, inputs={self.input_blob: img})
-        ### Return any necessary information ###
-        ### Note: You may need to update the function parameters. ###
         return time() - infer_time_beg
 
     def wait(self):
@@ -173,18 +180,15 @@ class Network:
         start_time = time()
         objects = list()
         for layer_name, out_blob in output.items():
-            print(out_blob.shape)
-            print("Layer:{}\nOutBlob:{}".format(layer_name, out_blob))
-            out_blob = out_blob.reshape(self.net.layers[self.net.layers[layer_name].parents[0]].shape)
+            # For each of 2 output layers, get their params
             layer_params = YoloParams(self.net.layers[layer_name].params, out_blob.shape[2])
+            #print("net Params: {}\t shape[2]{}".format(self.net.layers[layer_name].params, out_blob.shape[2]))
             log.info("Layer {} parameters: ".format(layer_name))
             layer_params.log_params()
-            objects += parse_yolo_region(out_blob, pframe.shape[2:],
+            objects += parse_yolo_region(out_blob, pframe.shape[2:],    # [Feature map outputs, 416, 416, YoloParams objects]
                                          frame.shape[:-1], layer_params,
                                          prob)
         parsing_time = time() - start_time
-            #detector/yolo-v3-tiny/Conv_12/BiasAdd/YoloRegion, and
-            #detector/yolo-v3-tiny/Conv_9/BiasAdd/YoloRegion
 
             #print("Layer:{}\nOutBlob:{}".format(layer_name, out_blob))
             #print(out_blob.shape)
