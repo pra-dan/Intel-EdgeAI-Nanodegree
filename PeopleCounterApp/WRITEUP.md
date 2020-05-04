@@ -17,12 +17,12 @@ Some of the potential reasons for handling custom layers are...
 
 I have used the [YOLO v3-tiny model](https://pjreddie.com/media/files/papers/YOLOv3.pdf), based on Darknet. My method(s) to compare models before and after conversion to Intermediate Representations
 were as follows:
-Pre-Conversion|Post-Conversion
---|--
-The difference between model accuracy pre- and post-conversion was...
+Parameter|Pre-Conversion|Post-Conversion
+--|--|--
+Size|33.79 MB | 35.4 MB
+Total Execution Time|43.34 s| 2.67 s
 
-33.79 MB | 35.4 MB
-43.34 s| 0.0038 s
+Although there was an impressive boost in the exeecution time, but this was achieved at the cost of lower accuracy; many classes were not detected.
 
 ## Assess Model Use Cases
 
@@ -74,19 +74,6 @@ The conversion was successfully executed, as shown in the log:
   - [Model Source]
   - I converted the model to an Intermediate Representation with the following arguments...
   - The model was insufficient for the app because...
-  - I tried to improve the model for the app by...
-
-- Model 2: [Name]
-  - [Model Source]
-  - I converted the model to an Intermediate Representation with the following arguments...
-  - The model was insufficient for the app because...
-  - I tried to improve the model for the app by...
-
-- Model 3: [Name]
-  - [Model Source]
-  - I converted the model to an Intermediate Representation with the following arguments...
-  - The model was insufficient for the app because...
-  - I tried to improve the model for the app by...
-
+  - I tried to improve the model fo
 ### References
 * [OpenVINO Toolkit API Classes](https://docs.openvinotoolkit.org/2019_R3/ie_python_api.html)

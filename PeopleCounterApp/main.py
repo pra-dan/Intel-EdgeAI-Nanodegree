@@ -27,12 +27,6 @@ MQTT_HOST = IPADDRESS
 MQTT_PORT = 3001
 MQTT_KEEPALIVE_INTERVAL = 60
 
-Anchors = 5
-anchor_sets =  [0.57273, 0.677385, 1.87446, 2.06253, 3.33843, 5.47434, 7.88282, 3.52778, 9.77052, 9.16828]
-# Link: https://github.com/pjreddie/darknet/blob/master/cfg/yolov2-tiny.cfg
-Classes = 80
-
-
 def build_argparser():
     """
     Parse command line arguments.
@@ -66,9 +60,7 @@ def build_argparser():
 # Parse the classes file into a list
 def class_file_parser(args):
     labels_map = open(args.class_file).read().strip().split("\n")
-    # Assign unique colour to each class
-    colors = np.random.randint(0, 255, size=(len(labels_map), 3), dtype="uint8")
-    return labels_map, colors
+    return labels_map
 
 def intersection_over_union(box_1, box_2):
     width_of_overlap_area = min(box_1['xmax'], box_2['xmax']) - max(box_1['xmin'], box_2['xmin'])
@@ -84,74 +76,24 @@ def intersection_over_union(box_1, box_2):
         return 0
     return area_of_overlap / area_of_union
 
-def non_maximal_suppression(thresholded_predictions,iou_threshold):
+def draw_box(frame, labels_map, objects):
+    origin_im_size = frame.shape[:-1]
+    for obj in objects:
+        # Validation bbox of detected object
+        if obj['xmax'] > origin_im_size[1] or obj['ymax'] > origin_im_size[0] or obj['xmin'] < 0 or obj['ymin'] < 0:
+            continue
+        color = (int(min(obj['class_id'] * 12.5, 255)),
+                 min(obj['class_id'] * 7, 255), min(obj['class_id'] * 5, 255))
+        det_label = labels_map[obj['class_id']] if labels_map and len(labels_map) >= obj['class_id'] else \
+            str(obj['class_id'])
 
-    nms_predictions = []
-    nms_predictions.append(thresholded_predictions[0])
-    # thresholded_predictions[0] = [x1,y1,x2,y2]
+        cv2.rectangle(frame, (obj['xmin'], obj['ymin']), (obj['xmax'], obj['ymax']), (255,255,255), 3)
+        cv2.putText(frame,
+                    "#" + det_label + ' ' + str(round(obj['confidence'] * 100, 1)) + ' %',
+                    (obj['xmin'], obj['ymin'] - 7), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)
 
-    i = 1
-    while i < len(thresholded_predictions):
-        n_boxes_to_check = len(nms_predictions)
-        #print('N boxes to check = {}'.format(n_boxes_to_check))
-        to_delete = False
-
-        j = 0
-        while j < n_boxes_to_check:
-            curr_iou = iou(thresholded_predictions[i][0],nms_predictions[j][0])
-            if(curr_iou > iou_threshold ):
-                to_delete = True
-                #print('Checking box {} vs {}: IOU = {} , To delete = {}'.format(thresholded_predictions[i][0],nms_predictions[j][0],curr_iou,to_delete))
-                j = j+1
-
-                if to_delete == False:
-                    nms_predictions.append(thresholded_predictions[i])
-                    i = i+1
-
-                    return nms_predictions
-
-def draw_box(image, big_list, colors):
-    #image = cv2.imread(img)
-    font                   = cv2.FONT_HERSHEY_SIMPLEX
-    fontScale              = 1
-    fontColor              = (0,255,0)
-    lineType               = 2
-    thickness = 3
-    #print(image.shape)  #(3, 416, 416)
-    _, img_h, img_w = image.shape
-    #color = [c colors
-    for i in big_list:
-        box_cls = i[0]; print(box_cls)
-        box_x = i[1]; print(box_x)
-        box_y = i[2]; print(box_y)
-        box_w = i[3]; print(box_w)
-        box_h = i[4]; print(box_h)
-
-
-
-        if(box_x >=0 and box_y >= 0 and box_w>=0 and box_h>=0 and box_cls == "dog"):
-            top_x = int(box_x)
-            top_y = int(box_y)
-            bot_y = int(top_y+box_h)
-            bot_x = int(top_x+box_w);
-            print(bot_x, bot_y)
-        print("bo ");print(i[1], i[2], i[3], i[4])
-        cv2.rectangle(image,
-                    (int(i[1]), int(i[2])),
-                    (int(i[3]), int(i[4])),
-                    fontColor)
-
-        cv2.putText(image,
-                  box_cls,
-                  (i[1], i[2]-5),
-                  font,
-                  fontScale,
-                  fontColor,
-                  lineType)
-
-    # Saving the image
-    cv2.imwrite("output.png",image)
-    cv2.imshow("output", image)
+    cv2.imshow("DetectionResults", frame)
+    cv2.imwrite("DetectionResults.jpg", frame)
 
 def connect_mqtt():
     ### TODO: Connect to the MQTT client ###
@@ -162,7 +104,7 @@ def connect_mqtt():
 
 def infer_on_stream(args, client):
     # Get classes_list
-    labels_map, colors = class_file_parser(args)
+    labels_map = class_file_parser(args)
 
     # Initialise the class
     infer_network = Network()
@@ -183,6 +125,8 @@ def infer_on_stream(args, client):
         flag, frame = cap.read()
         if not flag:
             break
+        number_input_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        number_input_frames = 1 if number_input_frames != -1 and number_input_frames < 0 else number_input_frames
 
         key_pressed = cv2.waitKey(60)
 
@@ -196,7 +140,7 @@ def infer_on_stream(args, client):
 
         ### Start asynchronous inference for specified request ###
         infer_time = infer_network.async_inference(pframe)
-        log.info("Inference Complete in {}".format(infer_time))
+        log.info(f"Inference Time: {infer_time:.6f}s")
         ### Wait for the result ###
         if(infer_network.wait() == 0):
             ### Get the results of the inference request ###
@@ -221,32 +165,7 @@ def infer_on_stream(args, client):
 
             # Drawing objects with respect to the --prob_threshold CLI parameter
             objects = [obj for obj in objects if obj['confidence'] >= args.prob_threshold]
-
-            origin_im_size = frame.shape[:-1]
-            for obj in objects:
-                # Validation bbox of detected object
-                if obj['xmax'] > origin_im_size[1] or obj['ymax'] > origin_im_size[0] or obj['xmin'] < 0 or obj['ymin'] < 0:
-                    continue
-                color = (int(min(obj['class_id'] * 12.5, 255)),
-                         min(obj['class_id'] * 7, 255), min(obj['class_id'] * 5, 255))
-                det_label = labels_map[obj['class_id']] if labels_map and len(labels_map) >= obj['class_id'] else \
-                    str(obj['class_id'])
-                """
-                if args.raw_output_message:
-                    log.info(
-                        "{:^9} | {:10f} | {:4} | {:4} | {:4} | {:4} | {} ".format(det_label, obj['confidence'], obj['xmin'],
-                                                                                  obj['ymin'], obj['xmax'], obj['ymax'],
-                                                                                  color))
-                """
-                cv2.rectangle(frame, (obj['xmin'], obj['ymin']), (obj['xmax'], obj['ymax']), (255,255,255), 2)
-                cv2.putText(frame,
-                            "#" + det_label + ' ' + str(round(obj['confidence'] * 100, 1)) + ' %',
-                            (obj['xmin'], obj['ymin'] - 7), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)
-
-            cv2.imshow("DetectionResults", frame)
-            cv2.imwrite("DetectionResults.png", frame)
-            exit()
-
+            draw_box(frame, labels_map, objects)
             ### TODO: Extract any desired stats from the results ###
             ### TODO: Calculate and send relevant information on ###
             ### current_count, total_count and duration to the MQTT server ###
@@ -266,6 +185,7 @@ def main():
     """
     # Grab command line args
     args = build_argparser().parse_args()
+    cv2.destroyAllWindows()
     # Connect to the MQTT server
     client = connect_mqtt()
     # Perform inference on the input stream
@@ -273,7 +193,6 @@ def main():
     infer_on_stream(args, client)
     time_took = time() - fin_time
     log.info(f"Total execution Time: {time_took:.6f}s")
-    print(time_took)
 
 if __name__ == '__main__':
     main()

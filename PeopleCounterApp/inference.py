@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import sys
 import logging as log
@@ -69,8 +67,6 @@ def parse_yolo_region(blob, resized_image_shape, original_im_shape, params, thre
     objects = list()
 
     predictions = blob.flatten()    #(16095 for 13)
-    print(predictions)
-
     side_square = params.side * params.side     # 26*26 for first layer and 13*13 for second
 
     # ------------------------------------------- Parsing YOLO Region output -------------------------------------------
@@ -153,14 +149,12 @@ class Network:
 
         self.input_blob = next(iter(self.net.inputs))
         self.output_blob = next(iter(self.net.outputs))
-
-        ### Note: You may need to update the function parameters. ###
         return
 
     def get_input_shape(self):
         ### Return the shape of the input layer ###
-        print("The input blob shape was found as: {}".format(str(self.net.inputs[self.input_blob].shape)))
-        print("The output blob shape was found as: {}".format(str(self.net.outputs[self.output_blob].shape))) # (13, 13, 425)
+        print("Input blob shape: {}".format(str(self.net.inputs[self.input_blob].shape)))
+        print("Output blob shape: {}".format(str(self.net.outputs[self.output_blob].shape))) # (13, 13, 425)
         return self.net.inputs[self.input_blob].shape
 
     def async_inference(self, img):
