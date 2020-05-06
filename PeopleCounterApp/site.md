@@ -22,7 +22,7 @@ Region layer was first introduced in the DarkNet framework. Other frameworks, in
 
 Before Converting to IR using OpenVINO.
 
-![https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_done_finding_stats/PeopleCounterApp/resources/yolo_actual.gif](yolo_actual)
+![yolo_actual](https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_done_finding_stats/PeopleCounterApp/resources/yolo_actual.gif)
 
 Now, it seems lucid why we obtained these two layers as output from the Inference Engine. Pre-conversion to IR, they are named as simply _YOLO_ layers while post-conversion, they are named as _YoloRegion_.
 
@@ -98,5 +98,5 @@ for i in range(side_square):
       # More code...
 ```
 The working is visualised as:
-![https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_done_finding_stats/PeopleCounterApp/resources/avoidingNestedLoop.gif](avoidingNestedLoop)
+![avoidingNestedLoop](https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_done_finding_stats/PeopleCounterApp/resources/avoidingNestedLoop.gif)
 It is done for both the layers.
