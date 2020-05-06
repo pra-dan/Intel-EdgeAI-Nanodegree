@@ -98,5 +98,5 @@ for i in range(side_square):
       # More code...
 ```
 The working is visualised as:
-!(avoidingNestedLoop)[https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/master/PeopleCounterApp/resources/avoidingNestedLoop.gif]
+![https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/master/PeopleCounterApp/resources/avoidingNestedLoop.gif](avoidingNestedLoop)
 It is done for both the layers.
