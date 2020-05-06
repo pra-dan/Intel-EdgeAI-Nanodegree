@@ -1,11 +1,29 @@
-Run using
-python3 main.py -m popo_models/yolo-v2-coco.xml -i images/sample_dog.jpg -d CPU -pt 0.5
+# Run Using
+* Source the environmet bash script (if OpenVINO environmet is not automatically sourced using `.bashrc`)
+```
+source start.sh
+```
+* (Conditional) Launch OpenCV virtual environmet ONLY if you have installed OpenCV in a virtual environmet. Otherwise, you are allowed to skip this step.
+```
+workon cv
+# cv is the name of my v-environmet
+```
+* Run python script
+```
+python3 main.py -m popo_models/mystic_frozen_darknet_yolov3_tiny_model.xml -i /opt/intel/openvino_2020.1.023/Intel-EdgeAI-Nanodegree/PeopleCounterApp/resources/pedes_detect.mp4 -cl coco.names
+```
+* To log, uncomment the logging imports
+```
+# uncomment for logging
+#import logging
+#logging.basicConfig(format="[ %(levelname)s ] %(message)s", level=logging.INFO, stream=sys.stdout)
+#log = logging.getLogger()
+```
+in `inference.py` and `main.py` files. This is done to reduce this overload and focus computation on the real-time detection.
 
 # Project Write-Up
 
-You can use this document as a template for providing your project write-up. However, if you
-have a different format you prefer, feel free to use it as long as you answer all required
-questions.
+NOTE: The webcam input feature is not tested due to an implicit OpenCV issue reported by me [here](https://github.com/opencv/opencv/issues/17221).
 
 ## Explaining Custom Layers
 

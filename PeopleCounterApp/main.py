@@ -1,6 +1,7 @@
-"""People Counter."""
+"""People Counter
 # Run:
-#  python3 main.py -m popo_models/mystic_frozen_darknet_yolov3_tiny_model.xml -i /opt/intel/openvino_2020.1.023/Intel-EdgeAI-Nanodegree/PeopleCounterApp/images/sample_dog.jpg -cl coco.names
+ python3 main.py -m popo_models/mystic_frozen_darknet_yolov3_tiny_model.xml -i /opt/intel/openvino_2020.1.023/Intel-EdgeAI-Nanodegree/PeopleCounterApp/resources/pedes_detect.mp4 -cl coco.names
+"""
 import os
 import sys
 from time import time
@@ -16,9 +17,10 @@ import paho.mqtt.client as mqtt
 from argparse import ArgumentParser
 from inference import Network
 
-import logging
-logging.basicConfig(format="[ %(levelname)s ] %(message)s", level=logging.INFO, stream=sys.stdout)
-log = logging.getLogger()
+# uncomment for logging
+#import logging
+#logging.basicConfig(format="[ %(levelname)s ] %(message)s", level=logging.INFO, stream=sys.stdout)
+#log = logging.getLogger()
 
 # MQTT server environment variables
 HOSTNAME = socket.gethostname()
@@ -37,7 +39,7 @@ def build_argparser():
     parser.add_argument("-m", "--model", required=True, type=str,
                         help="Path to an xml file with a trained model.")
     parser.add_argument("-i", "--input", required=True, type=str,
-                        help="Path to image or video file")
+                        help="0: For using webcam, or else, Path to image or video file")
     parser.add_argument("-l", "--cpu_extension", required=False, type=str,
                         default=None,
                         help="MKLDNN (CPU)-targeted custom layers."
@@ -95,6 +97,45 @@ def draw_box(frame, labels_map, objects):
     cv2.imshow("DetectionResults", frame)
     cv2.imwrite("DetectionResults.jpg", frame)
 
+class stats:
+    def __init__(self,fps):
+        """
+        fps: Use FPS to compensate for the time lost when the person is not
+            detected during approaching and exit. (corresponds to Frames in a sec)
+        cu
+        """
+        self.fps = fps
+        self.curr_person_count = 0
+        self.tota_person_count = 0
+        self.duration = self.fps
+        self.are_you_counting = False
+        self.duration_list = list()
+        self.multiple_checks = self.fps
+
+    def update(self, count):
+        self.curr_person_count = count
+        # Look for continuously detections (All frames should detect)
+        if(self.curr_person_count > 0):
+            self.multiple_checks -= 1
+            if(self.multiple_checks == 0):
+                # Reset count
+                self.multiple_checks = self.fps
+                self.duration += self.curr_person_count
+                if(self.are_you_counting == False):     # New Person detected
+                    self.tota_person_count += 1
+                    self.are_you_counting = True
+                    # The person has been identified ONCE and never again will I do it again :(
+                self.publishResults()
+        else:
+            self.multiple_checks = 10
+            self.duration = 2*self.fps
+            self.are_you_counting = False
+
+    def publishResults(self):
+        self.duration_list.append(self.duration)
+        print("Current: {}\t Total: {}\tduration: {}".format(self.curr_person_count, self.tota_person_count, self.duration))
+
+
 def connect_mqtt():
     ### TODO: Connect to the MQTT client ###
     client = None
@@ -117,7 +158,18 @@ def infer_on_stream(args, client):
     # Grab and open video capture
     infer_network.get_input_shape()
     cap = cv2.VideoCapture(args.input)
+
+    # Check if webcam as input is supported
+    if(cap.isOpened() == False and args.input == 0):
+        log.info("The webcam is not supported right now. Please troubleshoot the issue or provide video/image file")
+        sys.exit()
+
     cap.open(args.input)
+    # Get the FPS
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    print(fps)
+    # For stats
+    stat = stats(fps)
 
     ### Loop until stream is over ###
     while cap.isOpened():
@@ -125,8 +177,6 @@ def infer_on_stream(args, client):
         flag, frame = cap.read()
         if not flag:
             break
-        number_input_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        number_input_frames = 1 if number_input_frames != -1 and number_input_frames < 0 else number_input_frames
 
         key_pressed = cv2.waitKey(60)
 
@@ -164,8 +214,16 @@ def infer_on_stream(args, client):
                         objects[j]['confidence'] = 0
 
             # Drawing objects with respect to the --prob_threshold CLI parameter
-            objects = [obj for obj in objects if obj['confidence'] >= args.prob_threshold]
+            objects = [obj for obj in objects if obj['confidence'] >= args.prob_threshold and labels_map[obj['class_id']] == "person"]
             draw_box(frame, labels_map, objects)
+
+            #print(len(objects))
+            #for i in range(len(objects)):
+            #person_objs = person_stat()
+            #stat.curr_person_count = len(objects)
+            stat.update(len(objects))
+
+            #print(people_in_frame)
             ### TODO: Extract any desired stats from the results ###
             ### TODO: Calculate and send relevant information on ###
             ### current_count, total_count and duration to the MQTT server ###

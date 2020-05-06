@@ -3,9 +3,12 @@ import sys
 import logging as log
 from time import time
 from math import exp
-import logging
-logging.basicConfig(format="[ %(levelname)s ] %(message)s", level=logging.INFO, stream=sys.stdout)
-log = logging.getLogger()
+
+# uncomment for logging
+#import logging
+#logging.basicConfig(format="[ %(levelname)s ] %(message)s", level=logging.INFO, stream=sys.stdout)
+#log = logging.getLogger()
+
 from openvino.inference_engine import IENetwork, IECore, IEPlugin
 
 
@@ -145,7 +148,7 @@ class Network:
 
         ### Return the loaded inference plugin ###
         self.exec_net = plugin.load(self.net)
-        print("\nIR successfully loaded into Inference Engine.")
+        log.info("IR successfully loaded into Inference Engine.")
 
         self.input_blob = next(iter(self.net.inputs))
         self.output_blob = next(iter(self.net.outputs))
@@ -153,8 +156,8 @@ class Network:
 
     def get_input_shape(self):
         ### Return the shape of the input layer ###
-        print("Input blob shape: {}".format(str(self.net.inputs[self.input_blob].shape)))
-        print("Output blob shape: {}".format(str(self.net.outputs[self.output_blob].shape))) # (13, 13, 425)
+        #print("Input blob shape: {}".format(str(self.net.inputs[self.input_blob].shape)))
+        #print("Output blob shape: {}".format(str(self.net.outputs[self.output_blob].shape))) # (13, 13, 425)
         return self.net.inputs[self.input_blob].shape
 
     def async_inference(self, img):
