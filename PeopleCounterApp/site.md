@@ -21,7 +21,8 @@ for layer_name, out_blob in output.items():
 Region layer was first introduced in the DarkNet framework. Other frameworks, including TensorFlow, do not have the Region implemented as a single layer, so every author of public YOLOv3 model creates it using simple layers. This badly affects performance. For this reason, the main idea of YOLOv3 model conversion to IR is to cut off these custom Region-like parts of the model and complete the model with the Region layers where required. (Source)[https://docs.openvinotoolkit.org/latest/_docs_MO_DG_prepare_model_convert_model_tf_specific_Convert_YOLO_From_Tensorflow.html]
 
 Before Converting to IR using OpenVINO.
-!(actual_yolo_output)[https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/master/PeopleCounterApp/resources/yolo_actual.gif]
+
+![https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/master/PeopleCounterApp/resources/yolo_actual.gif](yolo_actual)
 
 Now, it seems lucid why we obtained these two layers as output from the Inference Engine. Pre-conversion to IR, they are named as simply _YOLO_ layers while post-conversion, they are named as _YoloRegion_.
 
