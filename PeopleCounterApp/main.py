@@ -1,9 +1,9 @@
 """People Counter
 # Run:
- python3 main.py -m popo_models/mystic_frozen_darknet_yolov3_tiny_model.xml -i /opt/intel/openvino_2020.1.023/Intel-EdgeAI-Nanodegree/PeopleCounterApp/resources/pedes_detect.mp4 -cl coco.names
+$ python3 main.py -m popo_models/mystic_frozen_darknet_yolov3_tiny_model.xml -i /opt/intel/openvino_2020.1.023/Intel-EdgeAI-Nanodegree/PeopleCounterApp/resources/pedes_detect.mp4 -pt 0.3 -cl coco.names | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm
 """
 import os
-import sys
+import sys      # For FFMPEG
 from time import time
 import socket
 import json
@@ -78,7 +78,7 @@ def intersection_over_union(box_1, box_2):
         return 0
     return area_of_overlap / area_of_union
 
-def draw_box(frame, labels_map, objects):
+def draw_box(frame, labels_map, objects, infer_time):
     origin_im_size = frame.shape[:-1]
     for obj in objects:
         # Validation bbox of detected object
@@ -91,34 +91,39 @@ def draw_box(frame, labels_map, objects):
 
         cv2.rectangle(frame, (obj['xmin'], obj['ymin']), (obj['xmax'], obj['ymax']), (255,255,255), 3)
         cv2.putText(frame,
-                    "#" + det_label + ' ' + str(round(obj['confidence'] * 100, 1)) + ' %',
+                    str(round(obj['confidence'] * 100, 1)) + ' %',
                     (obj['xmin'], obj['ymin'] - 7), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)
+    cv2.putText(frame,"Inference Time: "+str(round(infer_time,4)), (2,20), cv2.FONT_HERSHEY_COMPLEX, 1, (125,125,255), 2)
 
     cv2.imshow("DetectionResults", frame)
-    cv2.imwrite("DetectionResults.jpg", frame)
+    #cv2.imwrite("DetectionResults.jpg", frame)
+    return frame
 
 class stats:
-    def __init__(self,fps):
+    def __init__(self,fps,client):
         """
         fps: Use FPS to compensate for the time lost when the person is not
             detected during approaching and exit. (corresponds to Frames in a sec)
         cu
         """
         self.fps = fps
+        self.client = client
         self.curr_person_count = 0
         self.tota_person_count = 0
         self.duration = self.fps
         self.are_you_counting = False
-        self.duration_list = list()
+        self.duration_list = [0]
         self.multiple_checks = self.fps
 
     def update(self, count):
         self.curr_person_count = count
         # Look for continuously detections (All frames should detect)
         if(self.curr_person_count > 0):
+            # Did you detect a person ? If Yes, check that he is detected
+            #"multiple_checks"-1 more times
             self.multiple_checks -= 1
             if(self.multiple_checks == 0):
-                # Reset count
+                # Detected the person sufficient times. Now, Reset the check count
                 self.multiple_checks = self.fps
                 self.duration += self.curr_person_count
                 if(self.are_you_counting == False):     # New Person detected
@@ -126,6 +131,8 @@ class stats:
                     self.are_you_counting = True
                     # The person has been identified ONCE and never again will I do it again :(
                 self.publishResults()
+        # Reset the person counter : "multiple_checks" if no person was detected
+        # OR if he was not detected continuously for that many times
         else:
             self.multiple_checks = 10
             self.duration = 2*self.fps
@@ -133,13 +140,22 @@ class stats:
 
     def publishResults(self):
         self.duration_list.append(self.duration)
-        print("Current: {}\t Total: {}\tduration: {}".format(self.curr_person_count, self.tota_person_count, self.duration))
-
+        #print("Current: {}\t Total: {}\tduration: {}".format(self.curr_person_count, self.tota_person_count, self.duration))
+        ### Calculate and send relevant information on ###
+        ### current_count, total_count and duration to the MQTT server ###
+        ### Topic "person": keys of "count" and "total" ###
+        ### Topic "person/duration": key of "duration" ###
+        self.client.publish("person", json.dumps({"count": self.curr_person_count, "total": self.tota_person_count}))
+        #
+        #
+        #self.client.publish("person", json.dumps({"total": self.curr_person_count}))
+        print(self.tota_person_count)
+        self.client.publish("person/duration", json.dumps({"duration": self.duration}))
 
 def connect_mqtt():
-    ### TODO: Connect to the MQTT client ###
-    client = None
-
+    ### Connect to the MQTT client ###
+    client = mqtt.Client()
+    client.connect(MQTT_HOST, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
     return client
 
 
@@ -167,9 +183,9 @@ def infer_on_stream(args, client):
     cap.open(args.input)
     # Get the FPS
     fps = cap.get(cv2.CAP_PROP_FPS)
-    print(fps)
+    #print(fps)
     # For stats
-    stat = stats(fps)
+    stat = stats(fps,client)
 
     ### Loop until stream is over ###
     while cap.isOpened():
@@ -215,25 +231,16 @@ def infer_on_stream(args, client):
 
             # Drawing objects with respect to the --prob_threshold CLI parameter
             objects = [obj for obj in objects if obj['confidence'] >= args.prob_threshold and labels_map[obj['class_id']] == "person"]
-            draw_box(frame, labels_map, objects)
-
-            #print(len(objects))
-            #for i in range(len(objects)):
-            #person_objs = person_stat()
-            #stat.curr_person_count = len(objects)
+            final_frame = draw_box(frame, labels_map, objects,infer_time)
+            ### Extract any desired stats from the results ###
             stat.update(len(objects))
+            # The above function also sends the stats to the server
 
-            #print(people_in_frame)
-            ### TODO: Extract any desired stats from the results ###
-            ### TODO: Calculate and send relevant information on ###
-            ### current_count, total_count and duration to the MQTT server ###
-            ### Topic "person": keys of "count" and "total" ###
-            ### Topic "person/duration": key of "duration" ###
-
-        ### TODO: Send the frame to the FFMPEG server ###
-
-        ### TODO: Write an output image if `single_image_mode` ###
-
+        ### Send the frame to the FFMPEG server ###
+        #sys.stdout.buffer.write(final_frame)
+        #sys.stdout.flush()
+        ### Write an output image if `single_image_mode` ###
+        cv2.imwrite("output.jpg",final_frame)
 
 def main():
     """
@@ -251,6 +258,9 @@ def main():
     infer_on_stream(args, client)
     time_took = time() - fin_time
     log.info(f"Total execution Time: {time_took:.6f}s")
+
+    # WrapUp
+    client.disconnect()
 
 if __name__ == '__main__':
     main()

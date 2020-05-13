@@ -1,4 +1,8 @@
-# Run Using
+# Project Write-Up
+
+## Running the Project
+
+### Step 1 - Setup the OpenVINO environmet
 * Source the environmet bash script (if OpenVINO environmet is not automatically sourced using `.bashrc`)
 ```
 source start.sh
@@ -8,10 +12,56 @@ source start.sh
 workon cv
 # cv is the name of my v-environmet
 ```
-* Run python script
+### Step 2 - Start the Mosca server
+
 ```
-python3 main.py -m popo_models/mystic_frozen_darknet_yolov3_tiny_model.xml -i /opt/intel/openvino_2020.1.023/Intel-EdgeAI-Nanodegree/PeopleCounterApp/resources/pedes_detect.mp4 -cl coco.names
+cd webservice/server/node-server
+node ./server.js
 ```
+
+You should see the following message, if successful:
+```
+Mosca server started.
+```
+
+### Step 3 - Start the GUI
+
+Open new terminal and run below commands.
+```
+cd webservice/ui
+npm run dev
+```
+
+You should see the following message in the terminal.
+```
+...
+Project is running at http://0.0.0.0:3000/
+...
+...
+webpack: Compiled successfully
+```
+**NOTE: This address is where our project is running. It may vary on your configuration. So, use the same address that gets printed as shown above.**
+Open a tab in your browser and enter the address, in my case: http://0.0.0.0:3000/
+
+### Step 4 - FFmpeg Server
+
+Open new terminal and run the below commands.
+```
+sudo ffserver -f ./ffmpeg/server.conf
+```
+You should see the message like:
+```
+Tue May 12 16:34:17 2020 FFserver started.
+```
+
+### Step 5 - Run the code
+
+Open a new terminal to run the code. The arguments should be like:
+```
+$ python3 main.py -m popo_models/mystic_frozen_darknet_yolov3_tiny_model.xml -i /opt/intel/openvino_2020.1.023/Intel-EdgeAI-Nanodegree/PeopleCounterApp/resources/pedes_detect.mp4 -pt 0.3 -cl coco.names | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm
+```
+
+## Project Notes:
 * To log, uncomment the logging imports
 ```
 # uncomment for logging
@@ -21,9 +71,13 @@ python3 main.py -m popo_models/mystic_frozen_darknet_yolov3_tiny_model.xml -i /o
 ```
 in `inference.py` and `main.py` files. This is done to reduce this overload and focus computation on the real-time detection.
 
-# Project Write-Up
+* The webcam input feature is not tested due to an implicit OpenCV issue reported by me [here](https://github.com/opencv/opencv/issues/17221).
 
-NOTE: The webcam input feature is not tested due to an implicit OpenCV issue reported by me [here](https://github.com/opencv/opencv/issues/17221).
+* The project has been completed in various phases, with each phase saved as a branch of this GitHub project. The different progressive branches and their checkpoints are stated below:
+
+Branch Name | Checkpoint completed
+--|--
+b_
 
 ## Explaining Custom Layers
 
@@ -88,10 +142,5 @@ The conversion was successfully executed, as shown in the log:
 
 ```
 
-- Model 1: [Name]
-  - [Model Source]
-  - I converted the model to an Intermediate Representation with the following arguments...
-  - The model was insufficient for the app because...
-  - I tried to improve the model fo
 ### References
 * [OpenVINO Toolkit API Classes](https://docs.openvinotoolkit.org/2019_R3/ie_python_api.html)
