@@ -27,7 +27,7 @@ HOSTNAME = socket.gethostname()
 IPADDRESS = socket.gethostbyname(HOSTNAME)
 MQTT_HOST = IPADDRESS
 MQTT_PORT = 3001
-MQTT_KEEPALIVE_INTERVAL = 60
+MQTT_KEEPALIVE_INTERVAL = 120
 
 def build_argparser():
     """
@@ -95,7 +95,7 @@ def draw_box(frame, labels_map, objects, infer_time):
                     (obj['xmin'], obj['ymin'] - 7), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)
     cv2.putText(frame,"Inference Time: "+str(round(infer_time,4)), (2,20), cv2.FONT_HERSHEY_COMPLEX, 1, (125,125,255), 2)
 
-    cv2.imshow("DetectionResults", frame)
+    #cv2.imshow("DetectionResults", frame)
     #cv2.imwrite("DetectionResults.jpg", frame)
     return frame
 
@@ -124,19 +124,31 @@ class stats:
             self.multiple_checks -= 1
             if(self.multiple_checks == 0):
                 # Detected the person sufficient times. Now, Reset the check count
+                # and consider the detection as a true Person.
                 self.multiple_checks = self.fps
-                self.duration += self.curr_person_count
+                self.duration += 1
                 if(self.are_you_counting == False):     # New Person detected
                     self.tota_person_count += 1
                     self.are_you_counting = True
                     # The person has been identified ONCE and never again will I do it again :(
-                self.publishResults()
         # Reset the person counter : "multiple_checks" if no person was detected
         # OR if he was not detected continuously for that many times
+        elif(self.curr_person_count == 0 and self.are_you_counting == True):
+            self.are_you_counting = False
+            self.publishResults()
         else:
             self.multiple_checks = 10
             self.duration = 2*self.fps
             self.are_you_counting = False
+        """
+        Publish this LIVE (unlike the "duration" topic, published only after
+        the person leaves). This is done in the accordance with the strange
+        way the "webservice/ui/src/features/stats/Stats.jsx" is pre-written.
+        That is, the "Total_count" is the number of times the dumps are made to
+        the "duration" topic.
+        See more here:https://knowledge.udacity.com/questions/130017
+        """
+        self.client.publish("person", json.dumps({"count": self.curr_person_count, "total": self.tota_person_count}))
 
     def publishResults(self):
         self.duration_list.append(self.duration)
@@ -145,11 +157,8 @@ class stats:
         ### current_count, total_count and duration to the MQTT server ###
         ### Topic "person": keys of "count" and "total" ###
         ### Topic "person/duration": key of "duration" ###
-        self.client.publish("person", json.dumps({"count": self.curr_person_count, "total": self.tota_person_count}))
-        #
-        #
-        #self.client.publish("person", json.dumps({"total": self.curr_person_count}))
-        print(self.tota_person_count)
+        #self.client.publish("person", json.dumps({"count": self.curr_person_count, "total": self.tota_person_count}))
+        #print("total: {}\t Dur: {}".format(self.tota_person_count, self.duration))
         self.client.publish("person/duration", json.dumps({"duration": self.duration}))
 
 def connect_mqtt():
@@ -232,13 +241,14 @@ def infer_on_stream(args, client):
             # Drawing objects with respect to the --prob_threshold CLI parameter
             objects = [obj for obj in objects if obj['confidence'] >= args.prob_threshold and labels_map[obj['class_id']] == "person"]
             final_frame = draw_box(frame, labels_map, objects,infer_time)
+
             ### Extract any desired stats from the results ###
             stat.update(len(objects))
             # The above function also sends the stats to the server
 
         ### Send the frame to the FFMPEG server ###
-        #sys.stdout.buffer.write(final_frame)
-        #sys.stdout.flush()
+        sys.stdout.buffer.write(final_frame)
+        sys.stdout.flush()
         ### Write an output image if `single_image_mode` ###
         cv2.imwrite("output.jpg",final_frame)
 
@@ -251,8 +261,10 @@ def main():
     # Grab command line args
     args = build_argparser().parse_args()
     cv2.destroyAllWindows()
+
     # Connect to the MQTT server
     client = connect_mqtt()
+
     # Perform inference on the input stream
     fin_time = time()
     infer_on_stream(args, client)

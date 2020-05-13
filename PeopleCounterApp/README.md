@@ -3,8 +3,8 @@
 | Details            |              |
 |-----------------------|---------------|
 | Programming Language: |  Python 3.5 or 3.6 |
-
-![people-counter-python](./images/people-counter-image.png)
+The dependencies and their versions can be found in the [requirements.txt](https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_server_set_up_project_done/PeopleCounterApp/requirements.txt)
+![results](https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_server_set_up_project_done/PeopleCounterApp/resources/run.gif)
 
 ## What it Does
 
@@ -149,8 +149,6 @@ Tue May 12 16:34:17 2020 FFserver started.
 Open a new terminal to run the code. The arguments should be like:
 ```
 $ python3 main.py -m popo_models/mystic_frozen_darknet_yolov3_tiny_model.xml -i /opt/intel/openvino_2020.1.023/Intel-EdgeAI-Nanodegree/PeopleCounterApp/resources/pedes_detect.mp4 -pt 0.3 -cl coco.names | ffmpeg -v warning -f rawvideo -pixel_format bgr24 -video_size 768x432 -framerate 24 -i - http://0.0.0.0:3004/fac.ffm
-
-
 ```
 
 #### Running on the Intel® Neural Compute Stick

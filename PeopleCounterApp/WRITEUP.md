@@ -44,11 +44,11 @@ You should see the message like:
 Tue May 12 16:34:17 2020 FFserver started.
 ```
 ### Step 4 - Setup the OpenVINO environmet
-* Open a new terminal and source the environmet bash script (if OpenVINO environmet is not automatically sourced using `.bashrc`)
+Open a new terminal and source the environmet bash script (if OpenVINO environmet is not automatically sourced using `.bashrc`)
 ```
 source start.sh
 ```
-* (Conditional) Launch OpenCV virtual environmet ONLY if you have installed OpenCV in a virtual environmet. Otherwise, you are allowed to skip this step.
+**(Conditional)** Launch OpenCV virtual environmet ONLY if you have installed OpenCV in a virtual environmet. Otherwise, you are allowed to skip this step.
 ```
 workon cv
 # cv is the name of my v-environmet
@@ -119,6 +119,7 @@ The conversion was successfully executed, as shown in the log:
 [ SUCCESS ] Memory consumed: 516 MB.
 ```
 
+
 ## Comparing Model Performance
 
 I have used the [YOLO v3-tiny model](https://pjreddie.com/media/files/papers/YOLOv3.pdf), based on Darknet. My method(s) to compare models before and after conversion to Intermediate Representations
@@ -135,21 +136,27 @@ Although there was an impressive boost in the execution time, but this was achie
 ![pre-conversion](https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_server_set_up_project_done/PeopleCounterApp/resources/results_pre.jpg)
 ![pre-conversion](https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_server_set_up_project_done/PeopleCounterApp/resources/results_post.jpg)
 
-The CPU usage is shown below:   
+The CPU usage is shown below:  
+
+* Pre-Conversion Inference (PID: 12805)
 ![pre-conversion](https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_server_set_up_project_done/PeopleCounterApp/resources/cpu_usage_default.gif)
+* Post-Conversion Inference (PID: 12509)
 ![pre-conversion](https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_server_set_up_project_done/PeopleCounterApp/resources/cpu_usage_openvino.gif)
 
-## Assess Model Use Cases
+## Model Use Cases
 
 Some of the potential use cases of the people counter app are:
 * **Social Distancing Monitoring System:** This application suits the recently needed social distancing measures, perfectly. It can be deployed at the shopping stores and common places that see multiple people gathering at a place. Hardware can be edge devices like the CCTV cameras or as a small addon to it, that ensures that there are not more than a particular number of people in the store and alarms can be raised if the number exceeds.
 
 * **Buyer Time Monitoring System:** The application also suits another related purpose: the need to monitor if all the costomers/buyers get equal or rather not more than the specified time, thus ensuring that no buyer stays in the store for more than time T and others can get to buy the commodities without having to wait for long in wearsome queues. If the average time can be fixed and shared with the customers, then each customer can know exactly how long does he/she have to wait before they get the chance (knowing how many people are standing in front of them at that instant).
 
-## Assess Effects on End User Needs
+## Effects on End User Needs
 
-Lighting, model accuracy, and camera focal length/image size have different effects on a
-deployed edge model. The potential effects of each of these are as follows...
+There are some of the design constraints have different effects on a deployed edge model. The potential effects of each of these are as follows:
+* Lighting,
+* Model accuracy:
+* Camera focal length
+* Image size
 
 ### References
 * [OpenVINO Toolkit API Classes](https://docs.openvinotoolkit.org/2019_R3/ie_python_api.html)
