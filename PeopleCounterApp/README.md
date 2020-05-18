@@ -3,7 +3,10 @@
 | Details            |              |
 |-----------------------|---------------|
 | Programming Language: |  Python 3.5 or 3.6 |
+| Tested on | Intel® Core™ i3-4010U CPU @ 1.70GHz × 4|
+
 The dependencies and their versions can be found in the [requirements.txt](https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_server_set_up_project_done/PeopleCounterApp/requirements.txt)
+
 ![results](https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_server_set_up_project_done/PeopleCounterApp/resources/run.gif)
 
 ## What it Does

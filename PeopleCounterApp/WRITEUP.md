@@ -119,7 +119,6 @@ The conversion was successfully executed, as shown in the log:
 [ SUCCESS ] Memory consumed: 516 MB.
 ```
 
-
 ## Comparing Model Performance
 
 I have used the [YOLO v3-tiny model](https://pjreddie.com/media/files/papers/YOLOv3.pdf), based on Darknet. My method(s) to compare models before and after conversion to Intermediate Representations
@@ -153,10 +152,10 @@ Some of the potential use cases of the people counter app are:
 ## Effects on End User Needs
 
 There are some of the design constraints have different effects on a deployed edge model. The potential effects of each of these are as follows:
-* Lighting,
-* Model accuracy:
-* Camera focal length
-* Image size
+
+* Model accuracy: There is a trade-off between the model accuracy and the inference time. The better models like the YOLOv3 are comparatively larger (200+ MBs) but give highly accurate detections. To run the detection on my old i3,4GB system, I chose smaller version-YOLOv3-tiny. To get satisfactory detections, we drop the confidence threshold to a value as low as 0.3.
+
+* Image size: The larger images suffer from the same effect of dropped accuracy with some (almost negligible) increase in inference time.
 
 ### References
 * [OpenVINO Toolkit API Classes](https://docs.openvinotoolkit.org/2019_R3/ie_python_api.html)
