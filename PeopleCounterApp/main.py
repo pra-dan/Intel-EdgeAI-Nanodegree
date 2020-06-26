@@ -1,6 +1,8 @@
-"""People Counter."""
+"""People Counter.
 # Run:
-#  python3 main.py -m popo_models/mystic_frozen_darknet_yolov3_tiny_model.xml -i /opt/intel/openvino_2020.1.023/Intel-EdgeAI-Nanodegree/PeopleCounterApp/images/sample_dog.jpg -cl coco.names
+ $ python3 main.py -m popo_models/mystic_frozen_darknet_yolov3_tiny_model.xml -i /opt/intel/openvino_2020.1.023/Intel-EdgeAI-Nanodegree/PeopleCounterApp/images/man1.png -cl coco.names -pt 0.3 -iout 0.3
+"""
+
 import os
 import sys
 from time import time
@@ -74,26 +76,35 @@ def intersection_over_union(box_1, box_2):
     area_of_union = box_1_area + box_2_area - area_of_overlap
     if area_of_union == 0:
         return 0
+    #print(f"iou: {area_of_overlap / area_of_union}")
     return area_of_overlap / area_of_union
 
-def draw_box(frame, labels_map, objects):
+def draw_box(frame, labels_map, objects,i):
     origin_im_size = frame.shape[:-1]
     for obj in objects:
         # Validation bbox of detected object
         if obj['xmax'] > origin_im_size[1] or obj['ymax'] > origin_im_size[0] or obj['xmin'] < 0 or obj['ymin'] < 0:
             continue
-        color = (int(min(obj['class_id'] * 12.5, 255)),
-                 min(obj['class_id'] * 7, 255), min(obj['class_id'] * 5, 255))
+        color = (int(min(obj['class_id'] * 22.5, 255)),
+                 int(min(obj['class_id'] * 70, 255)), int(min(obj['class_id'] * 5, 255)))
         det_label = labels_map[obj['class_id']] if labels_map and len(labels_map) >= obj['class_id'] else \
             str(obj['class_id'])
 
-        cv2.rectangle(frame, (obj['xmin'], obj['ymin']), (obj['xmax'], obj['ymax']), (255,255,255), 3)
+        colors = np.random.randint(0, 255, size=(len(labels_map), 3), dtype="uint8")
+        print(color)
+        #
+        print(f"class  {det_label} color: {color}")
+        # (222, 77, 50)
+        cv2.rectangle(frame, (obj['xmin'], obj['ymin']), (obj['xmax'], obj['ymax']), color, 3)
         cv2.putText(frame,
                     "#" + det_label + ' ' + str(round(obj['confidence'] * 100, 1)) + ' %',
-                    (obj['xmin'], obj['ymin'] - 7), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)
+                    (obj['xmin'], obj['ymin'] - 7), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 3)
 
-    cv2.imshow("DetectionResults", frame)
-    cv2.imwrite("DetectionResults.jpg", frame)
+    cv2.imwrite("DetectionResults"+str(i)+".jpg", frame)
+    #cv2.imshow("DetectionResults", frame)
+    #cv2.waitKey(0)
+
+
 
 def connect_mqtt():
     ### TODO: Connect to the MQTT client ###
@@ -135,6 +146,7 @@ def infer_on_stream(args, client):
         ### Pre-process the image as needed ###
         b, c, h, w = infer_network.get_input_shape()
         pframe = cv2.resize(frame,(w,h))
+        cv2.imwrite("resized.jpg", pframe)
         pframe = pframe.transpose((2,0,1))
         pframe = pframe.reshape((b,c,h,w))
 
@@ -152,20 +164,27 @@ def infer_on_stream(args, client):
             Read more here: https://stackoverflow.com/a/50570204/9625777
             '''
             # Get output blobs/objects
-            objects = infer_network.get_output(args.prob_threshold,frame, pframe) # A dict with 2 layers
-
+            objects = infer_network.get_output(args.prob_threshold,frame, pframe, labels_map) # A dict with 2 layers
+            #draw_box(frame, labels_map, objects,0)
             # Filtering overlapping boxes with respect to the --iou_threshold CLI parameter
             objects = sorted(objects, key=lambda obj : obj['confidence'], reverse=True)
+
             for i in range(len(objects)):
                 if objects[i]['confidence'] == 0:
                     continue
                 for j in range(i + 1, len(objects)):
+                    # We perform IOU on objects of same class only
+                    if(objects[i]['class_id'] != objects[j]['class_id']): continue
+
+                    print(f"Between {labels_map[objects[i]['class_id']]} and {labels_map[objects[j]['class_id']]}\tiou={intersection_over_union(objects[i], objects[j])}")
                     if intersection_over_union(objects[i], objects[j]) > args.iou_threshold:
                         objects[j]['confidence'] = 0
 
             # Drawing objects with respect to the --prob_threshold CLI parameter
             objects = [obj for obj in objects if obj['confidence'] >= args.prob_threshold]
-            draw_box(frame, labels_map, objects)
+            print(f"final objects:{objects}")
+
+            draw_box(frame, labels_map, objects,1)
             ### TODO: Extract any desired stats from the results ###
             ### TODO: Calculate and send relevant information on ###
             ### current_count, total_count and duration to the MQTT server ###

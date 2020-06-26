@@ -3,6 +3,8 @@ import sys
 import logging as log
 from time import time
 from math import exp
+import numpy as np
+
 import logging
 logging.basicConfig(format="[ %(levelname)s ] %(message)s", level=logging.INFO, stream=sys.stdout)
 log = logging.getLogger()
@@ -47,14 +49,21 @@ def entry_index(side, coord, classes, location, entry):
 
 
 def scale_bbox(x, y, h, w, class_id, confidence, h_scale, w_scale):
+    """scale = np.array([min(w_scale/h_scale, 1), min(h_scale/w_scale, 1)])
+    offset = 0.5*(np.ones(2) - scale)
+    x, y = (np.array([x, y]) - offset) / scale
+    width, height = np.array([w, h]) / scale"""
+    #print(f"x{x}, y{y}, w{w}, h{h}")
     xmin = int((x - w / 2) * w_scale)
     ymin = int((y - h / 2) * h_scale)
     xmax = int(xmin + w * w_scale)
     ymax = int(ymin + h * h_scale)
+
+    print(f"x{xmin}, y{ymin}, xm{xmax}, ym{ymax}")
     return dict(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax, class_id=class_id, confidence=confidence)
 
 
-def parse_yolo_region(blob, resized_image_shape, original_im_shape, params, threshold):
+def parse_yolo_region(blob, resized_image_shape, original_im_shape, params, threshold,labels_map):
     # ------------------------------------------ Validating output parameters ------------------------------------------
     _, _, out_blob_h, out_blob_w = blob.shape   # [26, 26] and [13, 13]
     assert out_blob_w == out_blob_h, "Invalid size of output blob. It sould be in NCHW layout and height should " \
@@ -62,49 +71,50 @@ def parse_yolo_region(blob, resized_image_shape, original_im_shape, params, thre
                                      "".format(out_blob_h, out_blob_w)
 
     # ------------------------------------------ Extracting layer parameters -------------------------------------------
+    #print(f"predictions shape{blob.shape}")
     orig_im_h, orig_im_w = original_im_shape    # 416
     resized_image_h, resized_image_w = resized_image_shape  # 416
     objects = list()
 
-    predictions = blob.flatten()    #(16095 for 13)
-    side_square = params.side * params.side     # 26*26 for first layer and 13*13 for second
+    size_normalizer = (resized_image_w, resized_image_h) if params.isYoloV3 else (params.side, params.side)
 
-    # ------------------------------------------- Parsing YOLO Region output -------------------------------------------
-    #print("side_square: {}".format(side_square))
-    for i in range(side_square):
-        row = i // params.side
-        col = i % params.side   # Just another way of avoiding 2 nested for loopss
-        #print("row: {}\tcol{}".format(row,col))
-        for n in range(params.num):
-            obj_index = entry_index(params.side, params.coords, params.classes, n * side_square + i, params.coords)
-            #print("obj_index: {}".format(obj_index))
-            scale = predictions[obj_index]
-            if scale < threshold:
-                continue
-            box_index = entry_index(params.side, params.coords, params.classes, n * side_square + i, 0)
-            # Network produces location predictions in absolute coordinates of feature maps.
-            # Scale it to relative coordinates.
-            x = (col + predictions[box_index + 0 * side_square]) / params.side
-            y = (row + predictions[box_index + 1 * side_square]) / params.side
-            # Value for exp is very big number in some cases so following construction is using here
-            try:
-                w_exp = exp(predictions[box_index + 2 * side_square])
-                h_exp = exp(predictions[box_index + 3 * side_square])
-            except OverflowError:
-                continue
-            # Depends on topology we need to normalize sizes by feature maps (up to YOLOv3) or by input shape (YOLOv3)
-            w = w_exp * params.anchors[2 * n] / (resized_image_w if params.isYoloV3 else params.side)
-            h = h_exp * params.anchors[2 * n + 1] / (resized_image_h if params.isYoloV3 else params.side)
-            for j in range(params.classes):
-                class_index = entry_index(params.side, params.coords, params.classes, n * side_square + i,
-                                          params.coords + 1 + j)
-                confidence = scale * predictions[class_index]
-                if confidence < threshold:
+    for oth in range(0, blob.shape[1], 85):    # 255
+        for row in range(blob.shape[2]):       # 13
+            for col in range(blob.shape[3]):   # 13
+                #print(f"l {l}")
+                info_per_anchor = blob[0, oth:oth+85, row, col] #print("prob"+str(prob))
+                x, y, width, height, prob = info_per_anchor[:5]
+
+                if(prob < threshold):
                     continue
-                objects.append(scale_bbox(x=x, y=y, h=h, w=w, class_id=j, confidence=confidence,
-                                          h_scale=orig_im_h, w_scale=orig_im_w))
-    return objects
 
+                # Now the remaining terms (l+5:l+85) are 80 Classes
+                class_id = np.argmax(info_per_anchor[5:])
+
+                print(f"class @ 0.1 : {labels_map[class_id]} \t prob:{prob}")
+                #print("l: "+str(l)+"  Class: "+str(index_class)+"   ->  "+class_list[index_class]) #-(l+5)
+                # Process raw value
+                """
+                try exchangin col and row
+                """
+                x = (col + x) / params.side
+                y = (row + y) / params.side
+                # Value for exp is very big number in some cases so following construction is using here
+                try:
+                    width = exp(width)
+                    height = exp(height)
+                except OverflowError:
+                    continue
+                # Depends on topology we need to normalize sizes by feature maps (up to YOLOv3) or by input shape (YOLOv3)
+                n = int(oth/85)
+                #print(f"n: {n}, norm..{size_normalizer}")
+                width = width * params.anchors[2 * n] / size_normalizer[0]
+                height = height * params.anchors[2 * n + 1] / size_normalizer[1]
+
+                objects.append(scale_bbox(x=x, y=y, h=height, w=width, class_id=class_id, confidence=info_per_anchor[class_id],
+                                          h_scale=orig_im_h, w_scale=orig_im_w))
+    #print(f"objects at enpacking: \t{objects}")
+    return objects
 
 class Network:
     """
@@ -168,7 +178,7 @@ class Network:
         status = self.exec_net.requests[0].wait(-1)
         return status
 
-    def get_output(self, prob, frame, pframe):
+    def get_output(self, prob, frame, pframe,labels_map):
         ### Extract and return the output results
         output = self.exec_net.requests[0].outputs
         start_time = time()
@@ -181,7 +191,12 @@ class Network:
             layer_params.log_params()
             objects += parse_yolo_region(out_blob, pframe.shape[2:],    # [Feature map outputs, 416, 416, YoloParams objects]
                                          frame.shape[:-1], layer_params,
-                                         prob)
+                                         prob, labels_map)
+            print(f"In Layer {layer_name}")
+            print("Detected Objects")
+            for i in objects:
+                print(f"{i}")
+
         parsing_time = time() - start_time
 
             #print("Layer:{}\nOutBlob:{}".format(layer_name, out_blob))

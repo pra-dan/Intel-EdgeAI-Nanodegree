@@ -21,7 +21,7 @@ for layer_name, out_blob in output.items():
 Region layer was first introduced in the DarkNet framework. Other frameworks, including TensorFlow, do not have the Region implemented as a single layer, so every author of public YOLOv3 model creates it using simple layers. This badly affects performance. For this reason, the main idea of YOLOv3 model conversion to IR is to cut off these custom Region-like parts of the model and complete the model with the Region layers where required. (Source)[https://docs.openvinotoolkit.org/latest/_docs_MO_DG_prepare_model_convert_model_tf_specific_Convert_YOLO_From_Tensorflow.html]
 
 Before Converting to IR using OpenVINO.
-!(actual_yolo_output)[https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/master/PeopleCounterApp/resources/yolo_actual.gif]
+!(actual_yolo_output)[https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_done_finding_stats/PeopleCounterApp/resources/yolo_actual.gif]
 
 Now, it seems lucid why we obtained these two layers as output from the Inference Engine. Pre-conversion to IR, they are named as simply _YOLO_ layers while post-conversion, they are named as _YoloRegion_.
 
@@ -87,15 +87,44 @@ The attribute `mask` helps in distributing/allocating the anchors between the la
 ```
 This log is dumped by `log_params` in the above class. Another important element in the class definition is `self.isYoloV3 = 'mask' in param`. This simply helps us to determine whether the model being used is v3 or not. Actually, the `mask` is exclusive to YOLOv3 and tiny version. Previous versions lack it.  
 
-... Understanding the excerpt:
-* Getting Bounding box coordinates
-We loop through the 26x26 and 13x13 values just like we would have done using 2 nested loops. But this is just another method.
-```
-for i in range(side_square):
-      row = i // params.side
-      col = i % params.side
-      # More code...
-```
-The working is visualised as:
-!(avoidingNestedLoop)[https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/master/PeopleCounterApp/resources/avoidingNestedLoop.gif]
-It is done for both the layers.
+After the output layer has been extracted, we have a 3D array filled with _mysteriously_ packed data that is the treasure we seek. So, we need to understand this packing and then extract the results from these arrays. We write a parser function that performs this and call it `parse_yolo_region()`. This function takes in the array full of raw values (let's call it packed array) and gives out list of **all** detected `objects`. The function does the following. The two output blobs are (1,255,26,26) and (1,255,13,13). Let it be (1,255,side,side) for this blog (the `side` attribute is dedicated for this. Look up the definition of the `YoloParams` class). Let us now understand what this 255 and side x side mean.
+
+## What YOLOv3 outputs:
+
+The goal of object detection for YOLOv3 is to get a bounding box for any/all of the 80 classes it detects, and
+* get the coordinates of the top-left corner of the box,
+* get width and height of this box
+* get confidence if even a single image was detected
+* get the probablities of all objects that were detected
+
+To do this, it breaks the image into a grid. The two detectors will be giving a grid of shape:
+Layer/Detector | Grid shape
+--|--
+Conv_12 | 26x26
+Conv_9  | 13x13
+
+**Note:** We are specifically talking about YOLOv3-tiny. For the larger YOLOv3, another detector gives a grid of shape 52x52. Both these models accept strictly resized images of shape 416x416x3.
+
+If this was image:
+![img_1](https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_done_finding_stats/PeopleCounterApp/resources/man1.png)
+
+Then the grid over the image, by the `Conv_9` layer would be
+![img_1](https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_done_finding_stats/PeopleCounterApp/resources/blog1_1.png).
+
+Now, objects are detected within these grid cells.
+
+In total, there are 13x13 or 169 cells here. For each cell, the following parameters are found.
+* X & Y: Normalized x-y coordinates of top-left edge of detected box, relative to the center of the grid cell.
+* W & H: Width and Height of the box as offsets from cluster centroids.
+
+Using the explanatory image from official [paper](https://arxiv.org/abs/1804.02767) to explain in simple words,
+![grid](https://github.com/PrashantDandriyal/Intel-EdgeAI-Nanodegree/blob/b_done_finding_stats/PeopleCounterApp/resourcess/grid.png)
+
+
+
+
+
+
+
+## Sources
+* Cycle Image Used: https://unsplash.com/photos/Tzz4XrrdPUE
