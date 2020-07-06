@@ -1,0 +1,21 @@
+List of Devices
+Device Type Queue Label OpenVINO device FP model
+Intel Core i5 6442EQ CPU i5-6442eq CPU FP32
+Intel Core i5 6500TE CPU i5-6500te CPU FP32
+Intel Core i5 7500T CPU i5-7500t CPU FP32
+Intel Core i5 7500 CPU i5-7500 CPU FP32
+Intel Core i5 8365UE CPU i5-8365ue CPU FP32
+Intel Core i7 8665UE CPU i7-8665ue CPU FP32
+Intel Xeon E3 1268L v5 CPU e3-1268l-v5 CPU FP32
+Intel Atom x5-E3940 CPU e3940 CPU FP32
+Intel Atom x7-E3950 CPU e3950 CPU FP32
+Intel HD Graphics 500 GPU intel-hd-500 GPU FP32
+Intel HD Graphics 505 GPU intel-hd-505 GPU FP32
+Intel HD Graphics 530 GPU intel-hd-530 GPU FP32
+Intel HD Graphics P530 GPU intel-hd-p530 GPU FP32
+Intel UHD Graphics 620 GPU intel-uhd-620 GPU FP32
+Intel HD Graphics 630 GPU intel-hd-630 GPU FP32
+Intel Neural Compute Stick 2 VPU intel-ncs2 MYRIAD FP16
+Intel Vision Accelerator Design (HDDL-R) MA2485 VPU myriadx-ma2485-vpu HDDLR FP16 FP32
+Intel Vision Accelerator Design (HDDL-R) VPU iei-mustang-v100-mx8 HDDLR FP16 FP32
+Intel Vision Accelerator Design (HDDL-F) FPGA iei-mustang-f100-a10 HDDL FP11 FP16 FP32
