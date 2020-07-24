@@ -1,17 +1,17 @@
-# Computer Pointer Controller
+# Computer Pointer Controller :computer: :arrow_upper_left: 
 
 The project serves the requirement of project submitted to Udacity in course of the Intel IoT Nanodegree. This is the third project in the compulsory projects and the fifth and last project in all the projects. It aims to create a multi-model inference pipeline that utilizes 4 models:
-#### Face Detection Model: Detects faces in the frame and returns coordinates of a bounding box around it.
+* **Face Detection Model**: Detects faces in the frame and returns coordinates of a bounding box around it.
    ```python3
    # Input
-   Image with shape (**f**) with format #(b,c-BGR,h,w) 
+   Image with shape (1x3x384x672) with format #(b,c-BGR,h,w) 
    # Output
    The net outputs blob with shape: [1, 1, N, 7], where N is the number of
-   detected bounding boxes. Each detection has the format [image_id, label,
-   conf, x_min, y_min, x_max, y_max] 
+   detected bounding boxes. Each detection has the format 
+   [image_id, label, conf, x_min, y_min, x_max, y_max] 
    ```
 
-* Head Pose Detection Model: It takes in the box output of prior model and returns the inclination of the head in terms of `yaw`, `pitch` and `roll`.
+* **Head Pose Detection Model**: It takes in the box output of prior model and returns the inclination of the head in terms of `yaw`, `pitch` and `roll`.
 ```python3
 # Input
     [1x3x60x60] - An input image in [1xCxHxW] format. Expected color order is BGR.
@@ -23,7 +23,7 @@ The project serves the requirement of project submitted to Udacity in course of 
     name: "angle_r_fc", shape: [1, 1] - Estimated roll (in degrees). 
 ```
 
-* Facial Landmarks Regression Model: Takes in boxed faces detected by the first model and returns coordinates of 5 facial points: left-eye, right-eye, nose, left cheek and right cheek.
+* **Facial Landmarks Regression Model**: Takes in boxed faces detected by the first model and returns coordinates of 5 facial points: left-eye, right-eye, nose, left cheek and right cheek.
 ```python3
 # Input
     Name: "data" , shape: [1x3x48x48]
@@ -36,7 +36,7 @@ The project serves the requirement of project submitted to Udacity in course of 
     All the coordinates are normalized to be in range [0,1].
 ```
 
-* Gaze Estimation Model: The model uses the the coordinates of the boxes bounding the left-eye and right-eye; we obtain them by manipulating the facial-landmarks for them. The head inclinations are obtained by the head position model.
+* **Gaze Estimation Model**: The model uses the the coordinates of the boxes bounding the left-eye and right-eye; we obtain them by manipulating the facial-landmarks for them. The head inclinations are obtained by the head position model.
 ```python3
 # Input
     Blob left_eye_image and the shape [1x3x60x60] in the format [BxCxHxW]
@@ -54,7 +54,7 @@ The `x`, `y` and `z` coordinates for the gaze are then fed to the `mouse_control
 
 ## Project Set Up and Installation
 The project is setup as follows:
-```shell
+```bash
 .
 ├── bin
 │   ├── demo.mp4
@@ -123,28 +123,28 @@ The project is setup as follows:
 ```
 #### 1. Activate your virtual environment and Setup OpenVINO environment Variables
 I prefer doing it using a `bash` file (__start.sh__ in my case), defined as
-```
+```bash
 #!/bin/bash
 source ~/.virtualenvs/cv/bin/activate
 source /opt/intel/openvino/bin/setupvars.sh
 ``` 
 
 where `cv` is my virtual environment. Now, source it
-```
+```bash
 $ source start.sh
 ```
 
 
 #### 2. Install Dependencies: 
 Use the `requirements.txt` to install. 
-```
+```bash
 # cd into the ComputerPointerController directory
 $ pip install -r requirements.txt
 ```
  
 #### 3. Download Models:
 For a fresh start, models need to be downloaded and placed into the `models` directory as shown above. It is recommended to use the `model_downloader.py` in the directory `/opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/`. To download models  from the model zoo. 
-```
+```bash
 $ python /opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/downloader.py --name face-detection-adas-binary-0001 -o /models/
 
 $ python /opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/downloader.py --name head-pose-estimation-adas-0001 -o /models/
@@ -156,7 +156,7 @@ $ python /opt/intel/openvino/deployment_tools/open_model_zoo/tools/downloader/do
 
 ## Demo
 The `main.py` module handles all the other modules. The application can be run as 
-```
+```bash
 $ python3 main.py -l 0 -fd_path models/intel/face-detection-adas-binary-0001/FP32-INT1/face-detection-adas-binary-0001 -hpe_path models/intel/head-pose-estimation-adas-0001/FP16/head-pose-estimation-adas-0001 -fld_path models/intel/landmarks-regression-retail-0009/FP16/landmarks-regression-retail-0009 -gd_path models/intel/gaze-estimation-adas-0002/FP16/gaze-estimation-adas-0002 -fd_th 0.3 -i bin/img.png
 ```
 
@@ -166,7 +166,7 @@ On successful execution, you should get something like this
 
 ## Documentation
 The run can be controlled by knowing the arguments. 
-```python3
+```bash
 usage: main.py [-h] [-l LOG_FLAG] -fd_path FACE_DETECTION_MODEL_PATH -hpe_path
                HEAD_POSE_ESTIMATION_MODEL_PATH -fld_path
                FACIAL_LANDMARKS_DETECTION_MODEL_PATH -gd_path
@@ -199,8 +199,6 @@ to
 ```python3
 log.basicConfig(format='[INFO] \t %(message)s', level=log.DEBUG)
 ```
-python3 main.py -l 1 -fd_path models/intel/face-detection-adas-binary-0001/FP32-INT1/face-detection-adas-binary-0001 -hpe_path models/intel/head-pose-estimation-adas-0001/FP32/head-pose-estimation-adas-0001 -fld_path models/intel/landmarks-regression-retail-0009/FP32/landmarks-regression-retail-0009 -gd_path models/intel/gaze-estimation-adas-0002/FP32/gaze-estimation-adas-0002 -fd_th 0.3 -i bin/img.png
-
 
 ## Benchmarks
 ```bash
@@ -211,7 +209,7 @@ Head Pose Estimation         |  2.1641  |  0.3111  |  0.4235  |
 Facial Landmarks Detection   |  0.4974  |  0.2040  |  0.2497  |
 Gaze Detection               |  2.0417  |  0.3693  |  0.5139  |
 
-# Model Loading Time
+# Model Inference Time per frame
                                  INT8       FP16       FP32 
 Face Detection               |    -     |    -     |  0.0039  |
 Head Pose Estimation         |  0.0002  |  0.0030  |  0.0002  |
@@ -233,9 +231,11 @@ We notice that the INT8 precision model has additional layers `FakeQuantize` tha
 * A successful execution of all three models (Face Detection, Facial Landmarks Detection, Head Pose Estimation) looks this way
 ![result_all](https://github.com/pra-dan/Intel-EdgeAI-Nanodegree/blob/master/ComputerPointerController/bin/landmarks_result.png) 
 
-* The desired result looks like
+* With some latency, the desired result looks as shown below. 
 
 ![result](https://github.com/pra-dan/Intel-EdgeAI-Nanodegree/blob/master/ComputerPointerController/bin/mouse_pointer1.gif) 
+
+__Note: I had to drag the pointer inside the frame, whenever it escaped outside.__
 ___
 ## Edge Cases
 Some edge cases observed are:
